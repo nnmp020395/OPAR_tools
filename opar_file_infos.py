@@ -36,9 +36,14 @@ parser.add_argument("--date_start", "-start", type = lambda t: dt.datetime.strpt
     help="Date format = yyyy-mm-dd", required = True)
 parser.add_argument("--date_end", "-end", type = lambda t: dt.datetime.strptime(t, "%Y-%m-%d"), 
     help="Date format = yyyy-mm-dd", required = True)
+parser.add_argument("--out_path", "-o", type = str, 
+    help="Path of output txt file", required = False)
 opts = parser.parse_args()
 print(opts)
 
+#---------prepare for output text file-------------------
+out_path = opts.out_path + "/" + "opar_infos_output.txt"
+sys.stdout = open(out_path, "w")
 # opar_folder_path = "/home/nmpnguyen/OPAR/"
 # date_start = dt.date(2019,1,15)
 # date_end = dt.date(2019,1,20)
@@ -61,21 +66,21 @@ for date in list_dates:
         numb_profil += data.variables['time'].shape[0]
         numb_date_files += 1
 
-channel = data.variables['channel'][:]
-
 print("-----------------------")
 print(f"Instrument: {lidar_name.upper()}")
 print(f"Wavelength: 355nm")
 print("-----------------------")
 print("Number of date files: %d" %numb_date_files)
 print("Number of profiles: %d" %numb_profil)
-for ch,i in zip(channel, range(0, channel.shape[0])):
-    print("Voie %d : %s" %(i, ch))
 
-res = data.variables['range'][1].data - data.variables['range'][0].data
-print("Vertical resolution: %.3f %s" %(res, data.variables['range'].units))
-res = data.variables['time'][1].data - data.variables['time'][0].data
-print("Time resolution: %d %s" %(res, data.variables['time'].units.split(" ")[0]))
+if numb_date_files != 0:
+    channel = data.variables['channel'][:]
+    for ch,i in zip(channel, range(0, channel.shape[0])):
+        print("Voie %d : %s" %(i, ch))
+    res = data.variables['range'][1].data - data.variables['range'][0].data
+    print("Vertical resolution: %.3f %s" %(res, data.variables['range'].units))
+    res = data.variables['time'][1].data - data.variables['time'][0].data
+    print("Time resolution: %d %s" %(res, data.variables['time'].units.split(" ")[0]))
 
 
 lidar_name = "lio3t"
@@ -92,18 +97,20 @@ for date in list_dates:
         numb_profil += data.variables['time'].shape[0]
         numb_date_files += 1
 
-channel = data.variables['channel'][:]
-
 print("-----------------------")
 print(f"Instrument: {lidar_name.upper()}")
 print(f"Wavelength: 532nm")
 print("-----------------------")
 print("Number of date files: %d" %numb_date_files)
 print("Number of profiles: %d" %numb_profil)
-for ch,i in zip(channel, range(0, channel.shape[0])):
-    print("Voie %d : %s" %(i, ch))
 
-res = data.variables['range'][1].data - data.variables['range'][0].data
-print("Vertical resolution: %.3f %s" %(res, data.variables['range'].units))
-res = data.variables['time'][1].data - data.variables['time'][0].data
-print("Time resolution: %d %s" %(res, data.variables['time'].units.split(" ")[0]))
+if numb_date_files != 0:
+    channel = data.variables['channel'][:]
+    for ch,i in zip(channel, range(0, channel.shape[0])):
+        print("Voie %d : %s" %(i, ch))
+    res = data.variables['range'][1].data - data.variables['range'][0].data
+    print("Vertical resolution: %.3f %s" %(res, data.variables['range'].units))
+    res = data.variables['time'][1].data - data.variables['time'][0].data
+    print("Time resolution: %d %s" %(res, data.variables['time'].units.split(" ")[0]))
+
+sys.stdout.close()
