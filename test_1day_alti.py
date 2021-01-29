@@ -320,12 +320,12 @@ def main():
         else:
             print(opts.folder +"/LI1200.daily/"+ "2019*.nc4")
             os.chdir(opts.folder +"/LI1200.daily/")
-            lf = remove_error_file.remove_error_file(opts.folder, opts.lidar_name, 4)
+            lf = remove_error_file.remove_error_file(opts.folder, opts.lidar_name, 5)
             for fn in lf:
                 m+=1
                 print(fn)
                 fn = fn.split(".")[0]
-                Processed_355(opts.folder, opts.lidar_name ,fn, opts.plot,4)
+                # Processed_355(opts.folder, opts.lidar_name ,fn, opts.plot,4)
                 Processed_355(opts.folder, opts.lidar_name ,fn, opts.plot,5)
     else:
         fn = opts.day
