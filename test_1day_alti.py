@@ -115,7 +115,9 @@ def calibration(path_raw, path_simu, file_name, lidar_name, opts_plot, channel_n
     else:
         print("step2")
         signal = signal_before-mean_fc
-        i = np.where(altLi > alti_calib)[0][0]
+        i = np.where(altLi >= alti_calib/1000)[0][0]
+        print("Altitude ------------")
+        print(i, altLi[i], alti_calib)
         r_cc = rSelectLi[i:rSelectLi.shape[0]]
         z_cc = zSelectLi[i:zSelectLi.shape[0]]
         print(r_cc) #en km
@@ -301,7 +303,7 @@ def Processed_355(main_path, lidar_name ,fn, opts_plot, channel_numb, alti_calib
 from argparse import Namespace, ArgumentParser
 def main():
     parser = ArgumentParser()
-    parser.add_argument("--folder", "-f", type=str, help="Main folder of OPAR data, included LI1200.daily and LIO3T.daily folders")
+    parser.add_argument("--folder", "-f", type=str, help="Main folder of OPAR data, included LI1200.daily and LIO3T.daily folders", required=True)
     parser.add_argument("--day", "-d", type=str, help = "YYYY-MM-DD daily file")
     parser.add_argument("--plot", "-p", type=lambda x: x.lower()=='true', default=True, help="To create plots")
     parser.add_argument("--lidar_name", "-l", type=str, help="Name of lidar on upper character", required=True)
