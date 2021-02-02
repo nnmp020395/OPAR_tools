@@ -76,7 +76,7 @@ def plot_calibrated_betamol1(dataRaw, dataSimul, dataCalib, zLidar, rangeLi, con
     plt.close(f)
 
 
-def calibration(path_raw, path_simu, file_name, lidar_name, opts_plot, channel_numb):         
+def calibration(path_raw, path_simu, file_name, lidar_name, opts_plot, channel_numb, alti_calib):         
     def get_signal_significatif(signal):
         array_nozero = np.where(signal)
         if len(array_nozero[0])/(signal.shape[0]*signal.shape[1]) > 0.1:
@@ -115,7 +115,7 @@ def calibration(path_raw, path_simu, file_name, lidar_name, opts_plot, channel_n
     else:
         print("step2")
         signal = signal_before-mean_fc
-        i = np.where(altLi > 5.5)[0][0]
+        i = np.where(altLi > alti_calib)[0][0]
         r_cc = rSelectLi[i:rSelectLi.shape[0]]
         z_cc = zSelectLi[i:zSelectLi.shape[0]]
         print(r_cc) #en km
@@ -267,11 +267,11 @@ def Processed(fn, opts_plot):
     # plt.colorbar(h[3], ax=ax)
     # plt.savefig("/homedata/nmpnguyen/OPAR/Fig/Calibrated_LI1200_LIO3T/"+fn+"_ATBalti.png")
 
-def Processed_532(main_path, lidar_name ,fn, opts_plot):    
+def Processed_532(main_path, lidar_name ,fn, opts_plot, alti_calib):    
     lidar = main_path+lidar_name.upper()+".daily/"+fn+".nc4"
     #----------------------------------
     path_simu = "/homedata/nmpnguyen/OPAR/Processed/"+lidar_name.upper()+"/"+fn+"_simul.pkl"
-    signal_new532, z_cc2, betamol532_simu, constK2, channel2 = calibration(lidar, path_simu, fn, lidar_name.lower(), opts_plot, None) 
+    signal_new532, z_cc2, betamol532_simu, constK2, channel2 = calibration(lidar, path_simu, fn, lidar_name.lower(), opts_plot, None, alti_calib) 
     if signal_new532 is not None:
         t532 = pd.to_datetime(signal_new532.index)
         signal_new532.to_pickle("/homedata/nmpnguyen/OPAR/Processed/LIO3T/"+fn+"_"+channel2+"_ATB.pkl")
@@ -282,11 +282,11 @@ def Processed_532(main_path, lidar_name ,fn, opts_plot):
         plot_ATB_SR(signal_new532, betamol532_simu, z_cc2, t532, fn, lidar_name, channel2)
 
 
-def Processed_355(main_path, lidar_name ,fn, opts_plot, channel_numb):    
+def Processed_355(main_path, lidar_name ,fn, opts_plot, channel_numb, alti_calib):    
     lidar = main_path+lidar_name.upper()+".daily/"+fn+".nc4"
     #----------------------------------
     path_simu = "/homedata/nmpnguyen/OPAR/Processed/"+lidar_name.upper()+"/"+fn+"_simul.pkl"
-    signal_new355, z_cc, betamol355_simu, constK1, channel1 = calibration(lidar, path_simu, fn, lidar_name.lower(), opts_plot, channel_numb)
+    signal_new355, z_cc, betamol355_simu, constK1, channel1 = calibration(lidar, path_simu, fn, lidar_name.lower(), opts_plot, channel_numb, alti_calib)
     if signal_new355 is not None: 
         t355 = pd.to_datetime(signal_new355.index)
         signal_new355.to_pickle("/homedata/nmpnguyen/OPAR/Processed/LI1200/"+fn+"_"+channel1+"_ATB.pkl")
@@ -305,6 +305,7 @@ def main():
     parser.add_argument("--day", "-d", type=str, help = "YYYY-MM-DD daily file")
     parser.add_argument("--plot", "-p", type=lambda x: x.lower()=='true', default=True, help="To create plots")
     parser.add_argument("--lidar_name", "-l", type=str, help="Name of lidar on upper character", required=True)
+    parser.add_argument("--altitude", "-a", type=int, help="Calibration altitude (m)", required=True)
     opts = parser.parse_args()
     print(opts)
     if opts.day is None:
@@ -316,7 +317,7 @@ def main():
             for fn in lf:
                 print(fn)
                 fn = fn.split(".")[0]
-                Processed_532(opts.folder, opts.lidar_name ,fn, opts.plot)
+                Processed_532(opts.folder, opts.lidar_name ,fn, opts.plot, opts.altitude)
         else:
             print(opts.folder +"/LI1200.daily/"+ "2019*.nc4")
             os.chdir(opts.folder +"/LI1200.daily/")
@@ -325,11 +326,15 @@ def main():
                 m+=1
                 print(fn)
                 fn = fn.split(".")[0]
-                # Processed_355(opts.folder, opts.lidar_name ,fn, opts.plot,4)
-                Processed_355(opts.folder, opts.lidar_name ,fn, opts.plot,5)
+                # Processed_355(opts.folder, opts.lidar_name ,fn, opts.plot,4, opts.altitude)
+                Processed_355(opts.folder, opts.lidar_name ,fn, opts.plot,5, opts.altitude)
     else:
         fn = opts.day
-        Processed(fn, opts.plot)
+        if opts.lidar_name.upper() == "LIO3T":
+            Processed_532(opts.folder, opts.lidar_name ,fn, opts.plot, opts.altitude)
+        else:
+            Processed_355(opts.folder, opts.lidar_name ,fn, opts.plot,5, opts.altitude)
+            Processed_355(opts.folder, opts.lidar_name ,fn, opts.plot,4, opts.altitude)
 
 if __name__ == '__main__':
     main()
