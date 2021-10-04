@@ -1,0 +1,9 @@
+#PBS -e /homedata/nmpnguyen/OPAR/Processed/logs_error_residus
+#PBS -o /homedata/nmpnguyen/OPAR/Processed/logs_residus
+#PBS -N Residus_test
+#PBS -l mem=12gb 
+#PBS -l vmem=14gb
+
+source activate /homedata/nmpnguyen/python_envs/ipral_tools/
+python /home/nmpnguyen/Codes/residual_study.py
+

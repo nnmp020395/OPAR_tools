@@ -1,0 +1,16 @@
+#PBS -l mem=10gb 
+#PBS -l vmem=12gb
+
+#!bin/bash
+## backup dir format ##
+jobdate=$(date +'%Y%m%d')
+cd /homedata/nmpnguyen/jobs/${jobdate}
+
+jobname='distributionSR'
+#PBS -e /homedata/nmpnguyen/jobs/${jobdate}/logs_error_$jobname
+#PBS -o /homedata/nmpnguyen/jobs/${jobdate}/logs_$jobname
+#PBS -N $jobname
+
+source activate /homedata/nmpnguyen/python_envs/ipral_tools/ 
+#python /home/nmpnguyen/Codes/distributionSR_histogram_Ipral.py
+python /home/nmpnguyen/Codes/distributionSR_histogram_Opar_Copy1.py

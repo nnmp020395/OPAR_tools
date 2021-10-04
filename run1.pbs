@@ -1,0 +1,10 @@
+#PBS -e /homedata/nmpnguyen/OPAR/logs_error2
+#PBS -o /homedata/nmpnguyen/OPAR/logs2
+#PBS -N test_ratio
+#PBS -l mem=10gb 
+#PBS -l vmem=12gb
+
+source activate /homedata/nmpnguyen/python_envs/ipral_tools/
+cd /home/nmpnguyen/Codes
+python /home/nmpnguyen/Codes/opar_simulated_atb.py -w 355
+python Rayleigh_Fit_test2.py -top 7800 -bottom 5800 -w 355 -o RF_v1.nc
