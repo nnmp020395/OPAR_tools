@@ -85,7 +85,6 @@ def option_database(type_database, filepath):
 
 
 from argparse import Namespace, ArgumentParser
-# def main():
 parser = ArgumentParser()
 parser.add_argument("--path_of_tmp_file", "-file", type=str, help="path file", required=True)
 parser.add_argument("--option", "-opt", type=str, help="intrusment name", required=True)
